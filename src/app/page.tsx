@@ -1,5 +1,11 @@
+import Navigation from "./components/Navigation"
+import Footer from "./components/Footer"
+
 export default function Home() {
   return (
-   <div>Online Shop <i className="bx bx-sun"></i></div>
-  );
+    <div className="min-h-screen flex flex-col">
+      <Navigation />
+      <Footer />
+    </div>
+  )
 }
