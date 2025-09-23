@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { categories } from "../data/products";
 
 export default function Footer() {
   return (
@@ -58,6 +59,26 @@ export default function Footer() {
                 </a>
               ))}
             </div>
+          </div>
+          <div className="col-span-1 md:col-span-2">
+            <h3 className="text-[#003d5b] font-bold mb-4 text-lg">Categories</h3>
+          </div>
+           {/* Categories Section */}
+          <div className="col-span-1 md:col-span-2">
+            <h3 className="text-[#003d5b] font-bold mb-4 text-lg">Categories</h3>
+            <ul className="space-y-2.5">
+              {categories.slice(0, 5).map((category) => (
+                <li key={category.slug}>
+                  <Link
+                    href="/products"
+                    className="text-gray-600 hover:text-[#00798c] hover:translate-x-1 inline-flex items-center transition-all"
+                  >
+                    <span className="w-1.5 h-1.5 rounded-full bg-[#edae49] opacity-70 mr-2 inline-block"></span>
+                    {category.name}
+                  </Link>
+                </li>
+              ))}
+            </ul>
           </div>
         </div>
       </div>
