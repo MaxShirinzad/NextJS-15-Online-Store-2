@@ -2,6 +2,8 @@ import Link from "next/link";
 import { categories } from "../data/products";
 
 export default function Footer() {
+    const currentYear = new Date().getFullYear()
+    const companyName = 'OnlineStore'
     return (
         <footer>
             {/* Newsletter Section */}
@@ -60,7 +62,7 @@ export default function Footer() {
                             ))}
                         </div>
                     </div>
-                  
+
                     {/* Categories Section */}
                     <div className="col-span-1 md:col-span-2">
                         <h3 className="text-[#003d5b] font-bold mb-4 text-lg">Categories</h3>
@@ -87,7 +89,7 @@ export default function Footer() {
                             </li>
                         </ul>
                     </div>
-           
+
                     <div className="col-span-1 md:col-span-2">
                         <h3 className="text-[#003d5b] font-bold mb-4 text-lg">Shop</h3>
                         <ul className="space-y-2.5">
@@ -141,9 +143,43 @@ export default function Footer() {
                             )}
                         </ul>
                     </div>
-
                 </div>
             </div>
+
+            {/* Bottom Bar */}
+            <div className="border-t border-gray-200">
+                <div className="max-w-7xl mx-auto px-6 py-4">
+                    <div className="flex flex-col md:flex-row justify-between items-center">
+                        <div className="text-gray-500 text-sm mb-4 md:mb-0">
+                            &copy; {currentYear} OnlineStore. All rights reserved.
+                        </div>
+                        <div className="flex items-center">
+                            <div className="hidden sm:flex items-center mr-6 space-x-3">
+                                {['Visa', 'MasterCard', 'PayPal', 'Apple'].map((method) => (
+                                    <div className="text-gray-400" key={method}>
+                                        <i className={`bx bxl-${method.toLowerCase()} text-xl`} />
+                                    </div>
+                                ))}
+                            </div>
+
+                            <div className="flex space-x-4 items-center">
+                                <a href="#" className="text-sm text-gray-500 hover:text-[#003d5b]">
+                                    Terms
+                                </a>
+                                <span className="w-1 h-1 rounded-full bg-gray-300"></span>
+                                <a href="#" className="text-sm text-gray-500 hover:text-[#003d5b]">
+                                    Privacy
+                                </a>
+                                <span className="w-1 h-1 rounded-full bg-gray-300"></span>
+                                <a href="#" className="text-sm text-gray-500 hover:text-[#003d5b]">
+                                    Cookies
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
         </footer>
     );
 }
