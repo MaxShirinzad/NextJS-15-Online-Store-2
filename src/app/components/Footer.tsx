@@ -78,6 +78,15 @@ export default function Footer() {
                   </Link>
                 </li>
               ))}
+                <li>
+                <Link
+                  href="/products"
+                  className="text-[#00798c] hover:text-[#003d5b] font-medium hover:translate-x-1 inline-flex items-center transition-all group"
+                >
+                  View All
+                  <i className="bx bx-right-arrow-alt ml-1 opacity-70 group-hover:translate-x-1 transition-transform"></i>
+                </Link>
+              </li>
             </ul>
           </div>
         </div>
