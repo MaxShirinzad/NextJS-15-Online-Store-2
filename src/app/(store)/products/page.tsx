@@ -1,59 +1,148 @@
-import { categories, productsList } from "@/app/data/products";
-import Link from "next/link";
-import Image from "next/image";
+'use client';
+
+import { useQuery } from '@tanstack/react-query';
+import Link from 'next/link';
+import { getCategories, getProducts } from '@/lib/api';
+import { ProductCard } from '@/app/components/product-card';
+import { useState, useEffect } from 'react';
+
+// تابع helper برای فرمت کردن category
+function formatCategory(category: string): string {
+  if (typeof category !== 'string') {
+    return 'Unknown Category';
+  }
+  return category.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+}
 
 export default function ProductsPage() {
-  const getCategoryImage = (categorySlug: string): string => {
-    const categoryProduct = productsList.find(product => product.category === categorySlug);
-    return categoryProduct?.image || '/images/placeholder.png'
+  const [isMounted, setIsMounted] = useState(false);
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
+
+  // Fetch categories
+  const {
+    data: categories = [],
+    isLoading: categoriesLoading,
+    error: categoriesError,
+  } = useQuery({
+    queryKey: ['categories'],
+    queryFn: getCategories,
+    enabled: isMounted,
+  });
+
+  // Fetch products
+  const {
+    data: productsData,
+    isLoading: productsLoading,
+    error: productsError,
+  } = useQuery({
+    queryKey: ['products'],
+    queryFn: () => getProducts(30),
+    enabled: isMounted,
+  });
+
+  const products = productsData?.products || [];
+
+  // برای دیباگ - دیتای categories رو چک کنید
+  useEffect(() => {
+    if (categories.length > 0) {
+      console.log('Categories data:', categories);
+      console.log('First category type:', typeof categories[0]);
+      console.log('First category value:', categories[0]);
+    }
+  }, [categories]);
+
+  if (!isMounted) {
+    return (
+      <div className="container mx-auto px-4 py-8">
+        <div className="text-center">Loading...</div>
+      </div>
+    );
   }
+
+  if (categoriesError || productsError) {
+    return (
+      <div className="container mx-auto px-4 py-8">
+        <div className="text-center text-red-500">
+          Error loading data. Please try again later.
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <div className="max-w-7xl mx-auto px-4 pt-24 mb-16">
-      {/* Categories Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-        {categories.map((category) => (
-          <Link
-            href={`/products/${category.slug}`}
-            key={category.slug}
-            className="group bg-white rounded-xl overflow-hidden shadow-md hover:shadow-lg hover:translate-y-[-5px] border-b-4 relative transition-all"
-            style={{ borderColor: category.color }}
-          >
-            <div className="h-48 relative overflow-hidden bg-gray-100">
-              <Image
-                src={getCategoryImage(category.slug)}
-                alt={category.name}
-                fill
-                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 25vw"
-                className="object-contain p-4 group-hover:scale-105 transition-transform duration-300"
-              />
-            <div className="absolute bottom-0 left-0 right-0 h-12 bg-gradient-to-t from-white to-transparent"></div>
-            </div>
-            <div className="p-6">
-              <h3
-                className="text-xl font-bold mb-2 text-[#003d5b] group-hover:text-[#00798c] transition-colors"
-                style={{ color: category.color }}
-              >
-                {category.name}
-              </h3>
-              <p className="text-sm text-[#30638e] mb-4">{category.description}</p>
-              <div className="flex justify-end items-center text-sm font-medium transition-colors"
-                style={{ color: category.color }}>
-                <span className="mr-1">View Products</span>
-                <i className="bx bx-chevron-right text-xl transform group-hover:translate-x-1 transition-transform"></i>
+    <div className="container mx-auto px-4 py-8">
+      {/* Categories Section */}
+      <section className="mb-12">
+        <h2 className="text-3xl font-bold mb-6">Shop by Category</h2>
+        {categoriesLoading ? (
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+            {[...Array(8)].map((_, i) => (
+              <div key={i} className="animate-pulse">
+                <div className="bg-gray-200 h-32 rounded-lg mb-2"></div>
+                <div className="bg-gray-200 h-4 rounded w-3/4 mx-auto"></div>
               </div>
-            </div>
-          </Link>
-        ))}
-      </div>
-       {/* Bottom navigation */}
-      <div className="mt-12 pt-6 border-t border-gray-200">
-        <Link
-          href="/"
-          className="inline-flex items-center text-[#00798c] hover:text-[#003d5b] transition-colors"
-        >
-          <i className="bx bx-arrow-back mr-2"></i>Back to Home
-        </Link>
-      </div>
+            ))}
+          </div>
+        ) : (
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+            {categories.map((category, index) => {
+              // مطمئن بشیم category یه string هست
+              const categorySlug = typeof category === 'string' ? category : String(category);
+              const displayName = formatCategory(categorySlug);
+              
+              return (
+                <Link
+                  key={categorySlug}
+                  href={`/products/category/${categorySlug}`}
+                  className="group"
+                >
+                  <div className="bg-gradient-to-br from-blue-50 to-blue-100 rounded-lg p-6 text-center transition-all duration-300 group-hover:shadow-lg group-hover:scale-105">
+                    <div className="w-16 h-16 bg-blue-200 rounded-full flex items-center justify-center mx-auto mb-3 group-hover:bg-blue-300 transition-colors">
+                      <span className="text-2xl">📦</span>
+                    </div>
+                    <h3 className="font-semibold text-gray-800 group-hover:text-blue-600 transition-colors">
+                      {displayName}
+                    </h3>
+                  </div>
+                </Link>
+              );
+            })}
+          </div>
+        )}
+      </section>
+
+      {/* Featured Products Section */}
+      <section>
+        <h2 className="text-3xl font-bold mb-6">Featured Products</h2>
+        {productsLoading ? (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            {[...Array(8)].map((_, i) => (
+              <div key={i} className="animate-pulse">
+                <div className="bg-gray-200 h-48 rounded-lg mb-4"></div>
+                <div className="bg-gray-200 h-4 rounded mb-2"></div>
+                <div className="bg-gray-200 h-4 rounded w-3/4"></div>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            {products.map((product) => (
+              <ProductCard
+                key={product.id}
+                id={product.id}
+                title={product.title}
+                price={product.price}
+                image={product.thumbnail}
+                category={product.category}
+                rating={product.rating}
+              />
+            ))}
+          </div>
+        )}
+      </section>
     </div>
   );
 }

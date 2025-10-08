@@ -1,18 +1,10 @@
 import type { Metadata } from "next";
-import { Prompt } from "next/font/google";
 import "./globals.css";
-import 'boxicons/css/boxicons.min.css';
-
-const promptFont = Prompt({
-  subsets: ['latin'],
-  variable: '--font-prompt',
-  display: 'swap',
-  weight: ['300', '400', '500', '600', '700']
-});
+import QueryProvider from "@/providers/QueryProvider";
 
 export const metadata: Metadata = {
-  title: "Online Store",
-  description: "Online store shopping",
+  title: "NextJS Online Store",
+  description: "A modern online store built with Next.js 15",
 };
 
 export default function RootLayout({
@@ -21,11 +13,11 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={promptFont.className}>
-      <body
-        className={`antialiased min-h-screen flex flex-col m-0 p-0`}
-      >
-        {children}
+    <html lang="en" suppressHydrationWarning>
+      <body className="antialiased" suppressHydrationWarning>
+        <QueryProvider>
+          {children}
+        </QueryProvider>
       </body>
     </html>
   );
